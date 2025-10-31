@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bird Detection Gallery</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f3f4f6;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      color: #222;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      width: 250px;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐦 Bird Detection Results</h1>
+  <div id="gallery" class="gallery"></div>
+
+  <script type="module">
+    import { Client, Storage } from "https://cdn.jsdelivr.net/npm/appwrite@13.0.0/+esm";
+
+    const client = new Client()
+      .setEndpoint("https://your-appwrite-endpoint/v1")
+      .setProject("project_id");
+
+    const storage = new Storage(client);
+    const bucketId = "bucket_id";
+
+    async function loadImages() {
+      try {
+        const result = await storage.listFiles(bucketId);
+        const gallery = document.getElementById("gallery");
+
+        result.files.forEach(file => {
+          const fileUrl = `https://your-appwrite-endpoint/v1/storage/buckets/${bucketId}/files/${file.$id}/view?project=project_id`;
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `<img src="${fileUrl}" alt="Detected Bird"/>`;
+          gallery.appendChild(card);
+        });
+      } catch (error) {
+        console.error("Error loading images:", error);
+      }
+    }
+
+    loadImages();
+  </script>
+</body>
+</html>
